@@ -1,0 +1,6 @@
+*.csv
+build
+dist
+*.zip
+.DS_Store
+*.spec
