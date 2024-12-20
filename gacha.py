@@ -18,55 +18,52 @@ def load_data(csv_filename):
     csv_path = get_resource_path(csv_filename)
     return pd.read_csv(csv_path)
 
-def display_random_person(data):
-    # 「配属区分」が"主務"である行だけをフィルタリング
-    filtered_data = data[data['配属区分'] == "主務"]
+def display_random_person(data, award_name):
+    filtered_data = data[(data['配属区分'] == "主務") & (data['賞'] == award_name)]
 
-    # フィルタリングされたデータからランダムに選択
     if not filtered_data.empty:
         person = filtered_data.sample().iloc[0]
         name_text = f"{person['名前']}（{person['名前（読み仮名）']}）"
         org_text = f"{person['組織フルパス']}"
         result_label.config(text=name_text)
         org_label.config(text=org_text)
-        # 配置を更新
         result_label.place(relx=0.5, rely=0.35, anchor='center')
         org_label.place(relx=0.5, rely=0.55, anchor='center')
     else:
         result_label.config(text="該当する人はいません")
         org_label.config(text="")
-        # 配置を更新
         result_label.place(relx=0.5, rely=0.5, anchor='center')
         org_label.place_forget()
 
-def play_gif():
-    # GIFアニメーションの再生
-    global gif_label, gif_frame
+gif_frame = 0  # ここでgif_frameを初期化
 
-    # GIF再生開始時にテキストを非表示にする
+def play_gif():
+    global gif_label, gif_frame, selected_award
+
     result_label.place_forget()
     org_label.place_forget()
 
     gif_frame += 1
     try:
         gif_label.config(image=gif_frames[gif_frame])
-        window.after(180, play_gif)  # 再生速度を調整
+        window.after(180, play_gif)
     except IndexError:
         gif_frame = 0
-        display_random_person(data)  # GIF再生終了時にテキストを表示
+        display_random_person(data, selected_award)  # 選択された賞に基づいて抽選
 
 def show_award_image(award_name):
-    # 賞に対応する画像を表示
+    global selected_award
+    selected_award = award_name
+
     image_path = get_resource_path(f"images/{award_name}.png")
     award_image = Image.open(image_path)
     award_photo = ImageTk.PhotoImage(award_image)
     gif_label.config(image=award_photo)
     gif_label.image = award_photo
-    # 他のボタンを非表示にする
+
     for button in award_buttons:
         button.pack_forget()
-    
-    # 「ガチャを回す」ボタンを表示
+
     start_button.place(relx=0.5, rely=0.8, anchor='center')
     start_button.config(command=play_gif)
 
