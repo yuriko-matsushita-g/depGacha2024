@@ -39,8 +39,6 @@ def display_random_person(data):
         result_label.place(relx=0.5, rely=0.5, anchor='center')
         org_label.place_forget()
 
-gif_frame = 0
-
 def play_gif():
     # GIFアニメーションの再生
     global gif_label, gif_frame
@@ -57,28 +55,38 @@ def play_gif():
         gif_frame = 0
         display_random_person(data)  # GIF再生終了時にテキストを表示
 
-csv_path = "members.csv"
+def show_award_image(award_name):
+    # 賞に対応する画像を表示
+    image_path = get_resource_path(f"images/{award_name}.png")
+    award_image = Image.open(image_path)
+    award_photo = ImageTk.PhotoImage(award_image)
+    gif_label.config(image=award_photo)
+    gif_label.image = award_photo
+    # 他のボタンを非表示にする
+    for button in award_buttons:
+        button.pack_forget()
+    
+    # 「ガチャを回す」ボタンを表示
+    start_button.place(relx=0.5, rely=0.8, anchor='center')
+    start_button.config(command=play_gif)
+
+def show_main_menu():
+    # メインメニューを表示
+    gif_label.place_forget()
+    start_button.place_forget()
+    result_label.place_forget()
+    org_label.place_forget()
+    for button in award_buttons:
+        button.pack()
+
+csv_path = "present_members.csv"
 gif_path = get_resource_path("gacha.gif")
 
 data = load_data(csv_path)
 
 # Tkinterウィンドウの初期化
 window = tk.Tk()
-window.title("ガチャガチャアプリケーション")
-
-# GIFの読み込みとフレームの準備
-gif = Image.open(gif_path)
-gif_frames = []
-for i in range(gif.n_frames):
-    gif.seek(i)
-    frame = ImageTk.PhotoImage(image=gif.copy())
-    gif_frames.append(frame)
-
-gif_label = ttk.Label(window, image=gif_frames[0])
-gif_label.pack()
-
-start_button = ttk.Button(window, text="ガチャを回す", command=play_gif)
-start_button.pack()
+window.title("2024年忘年会抽選ガチャ")
 
 # フォントスタイルの設定
 name_font = tkFont.Font(family="Lucida Grande", size=45)
@@ -89,8 +97,33 @@ result_label = tk.Label(window, text="", font=name_font, bg="white")
 # 組織名を表示するラベル
 org_label = tk.Label(window, text="", font=org_font, bg="white")
 
-# ラベルを最初は表示しない
-result_label.place_forget()
-org_label.place_forget()
+# GIFの読み込みとフレームの準備
+gif = Image.open(gif_path)
+gif_frames = []
+for i in range(gif.n_frames):
+    gif.seek(i)
+    frame = ImageTk.PhotoImage(image=gif.copy())
+    gif_frames.append(frame)
+
+gif_label = ttk.Label(window)
+gif_label.pack()
+
+start_button = ttk.Button(window, text="ガチャを回す")
+start_button.pack()
+
+# 賞のボタンを作成
+award_names = [
+    "FDG首藤さん賞", "GPF永井さん賞", "INF_INF-DO大久保(将)さん賞",
+    "INF-DO万年さん賞", "IT鈴木さん賞", "SEC大本さん賞",
+    "JG1_JG4合津さん賞", "JG1大久保（吉）さん賞", "JG4嶺岸さん賞",
+    "DT森田さん賞", "INF舟橋さん賞"
+]
+
+award_buttons = []
+for award in award_names:
+    button = ttk.Button(window, text=award, command=lambda a=award: show_award_image(a))
+    award_buttons.append(button)
+
+show_main_menu()
 
 window.mainloop()

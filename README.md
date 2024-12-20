@@ -7,5 +7,5 @@
 
 ```bash
 pip install pyinstaller
-pyinstaller --onefile --windowed --add-data "members.csv:." --add-data "gacha.gif:." gacha.py
+pyinstaller --onefile --windowed --add-data "present_members.csv:." --add-data "gacha.gif:." --add-data "images:images" gacha.py
 ```
