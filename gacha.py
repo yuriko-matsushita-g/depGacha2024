@@ -141,10 +141,10 @@ for i in range(gif.n_frames):
     gif_frames.append(frame)
 
 gif_label = ttk.Label(window)
-gif_label.place(relx=0.5, rely=0.5, anchor='center')  # packの代わりにplaceを使用
+gif_label.place(relx=0.5, rely=0.5, anchor='center') 
 
 start_button = ttk.Button(window, text="TOPへ", command=show_main_menu)
-start_button.pack()
+start_button.place_forget() 
 
 # 賞のボタンを作成
 award_names = [
