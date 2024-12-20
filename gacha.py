@@ -46,10 +46,13 @@ def display_random_person(data, award_name):
     # 改行を削除した列名を使用
     filtered_data = data[data['【プレゼント選択】プレゼント抽選への参加をご希望される場合は、以下から1つお選びください。'] == csv_award_name]
 
+    # print(filtered_data)
     if not filtered_data.empty:
         person = filtered_data.sample().iloc[0]
         name_text = f"{person['氏名']}"
         org_text = f"{person['所属部署']}"
+        print(csv_award_name)
+        print(name_text)
         result_label.config(text=name_text)
         org_label.config(text=org_text)
         result_label.place(relx=0.5, rely=0.35, anchor='center')
@@ -60,10 +63,16 @@ def display_random_person(data, award_name):
         result_label.place(relx=0.5, rely=0.5, anchor='center')
         org_label.place_forget()
 
+    start_button.place(relx=0.5, rely=0.8, anchor='center')
+    start_button.config(text="TOPへ", command=show_main_menu)
+
 gif_frame = 0  # ここでgif_frameを初期化
 
 def play_gif():
     global gif_label, gif_frame, selected_award
+
+    # ボタンを非表示にする
+    start_button.place_forget()
 
     result_label.place_forget()
     org_label.place_forget()
@@ -71,11 +80,11 @@ def play_gif():
     gif_frame += 1
     try:
         gif_label.config(image=gif_frames[gif_frame])
-        gif_label.place(relx=0.5, rely=0.5, anchor='center')  # 明示的に配置
+        gif_label.place(relx=0.5, rely=0.5, anchor='center')
         window.after(180, play_gif)
     except IndexError:
         gif_frame = 0
-        gif_label.place_forget()  # 確実に非表示
+        gif_label.place_forget()
         display_random_person(data, selected_award)
 
 def show_award_image(award_name):
@@ -87,16 +96,15 @@ def show_award_image(award_name):
     award_photo = ImageTk.PhotoImage(award_image)
     gif_label.config(image=award_photo)
     gif_label.image = award_photo
-    gif_label.place(relx=0.5, rely=0.5, anchor='center')  # 明示的に配置
+    gif_label.place(relx=0.5, rely=0.5, anchor='center')
 
     for button in award_buttons:
         button.pack_forget()
 
     start_button.place(relx=0.5, rely=0.8, anchor='center')
-    start_button.config(command=play_gif)
+    start_button.config(text="ガチャを回す", command=play_gif)
 
 def show_main_menu():
-    # メインメニューを表示
     gif_label.place_forget()
     start_button.place_forget()
     result_label.place_forget()
@@ -135,7 +143,7 @@ for i in range(gif.n_frames):
 gif_label = ttk.Label(window)
 gif_label.place(relx=0.5, rely=0.5, anchor='center')  # packの代わりにplaceを使用
 
-start_button = ttk.Button(window, text="ガチャを回す")
+start_button = ttk.Button(window, text="TOPへ", command=show_main_menu)
 start_button.pack()
 
 # 賞のボタンを作成
